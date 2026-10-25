@@ -1,0 +1,587 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="E-Bike or E-Moto">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<style>html{color-scheme:light dark}body{margin:0}</style>
+<title>E-Bike or E-Motorcycle</title>
+<meta name="theme-color" content="#0F2C52">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" href="apple-touch-icon.png">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@600;700&family=Barlow:wght@400;500;600&display=swap">
+<style>
+/* Layout: navy header band with two logo slots, then one screen at a time in a narrow column. */
+:root {
+  --bg: #EDF1F6;
+  --surface: #FFFFFF;
+  --fg: #0E1A2B;
+  --muted: #4C5C73;
+  --line: #CBD5E2;
+  --accent: #12365F;
+  --accent-fg: #FFFFFF;
+  --link: #1B5AA6;
+  --gold: #C9A227;
+  --band: #0F2C52;
+  --band-fg: #FFFFFF;
+  --yes: #1B7F4B;
+  --yes-bg: #E3F3EA;
+  --no: #B3261E;
+  --no-bg: #FBEAE8;
+  --font-display: "Barlow Semi Condensed", "Arial Narrow", system-ui, sans-serif;
+  --font-body: "Barlow", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #09111D; --surface: #101C2E; --fg: #E5ECF6; --muted: #92A3BB; --line: #223249;
+    --accent: #7DB2EE; --accent-fg: #071426; --link: #8DBDF2; --gold: #D8B450; --band: #0C2342; --band-fg: #FFFFFF;
+    --yes: #52C98B; --yes-bg: #10281C; --no: #FF8A80; --no-bg: #2A1715; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #09111D; --surface: #101C2E; --fg: #E5ECF6; --muted: #92A3BB; --line: #223249;
+  --accent: #7DB2EE; --accent-fg: #071426; --link: #8DBDF2; --gold: #D8B450; --band: #0C2342; --band-fg: #FFFFFF;
+  --yes: #52C98B; --yes-bg: #10281C; --no: #FF8A80; --no-bg: #2A1715; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--fg);
+  font: 400 17px/1.45 var(--font-body);
+  padding-block: 20px 40px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+main { max-width: 34rem; margin: 0 auto; display: flex; flex-direction: column; gap: 18px; }
+
+/* Header band */
+.band { background: var(--band); color: var(--band-fg); border-radius: 14px; border-bottom: 4px solid var(--gold); padding: 14px; display: flex; align-items: center; gap: 12px; }
+.band .title { flex: 1; min-width: 0; text-align: center; display: flex; flex-direction: column; gap: 4px; }
+.kicker { font: 600 12px/1.1 var(--font-display); letter-spacing: .14em; text-transform: uppercase; color: var(--gold); }
+h1 { margin: 0; font: 700 clamp(1.05rem, 5.2vw, 1.9rem)/1.1 var(--font-display); }
+h1 .ln { display: block; white-space: nowrap; }
+h1.one { white-space: nowrap; }
+h1.one .ln { display: inline; }
+.logo { flex: none; width: 66px; height: 78px; display: flex; align-items: center; justify-content: center; }
+.logo.wide { width: 96px; height: 58px; background: #FFFFFF; border: 2px solid var(--gold); border-radius: 50%; padding: 6px 8px; }
+.logo img { max-width: 100%; max-height: 100%; object-fit: contain; display: block; }
+.logo.wide.ph { background: transparent; border: 1.5px dashed rgba(255,255,255,.55); border-radius: 8px; padding: 4px; }
+.logo.ph { border: 1.5px dashed rgba(255,255,255,.55); border-radius: 8px; font: 600 10px/1.15 var(--font-display); letter-spacing: .1em; text-transform: uppercase; text-align: center; color: rgba(255,255,255,.75); padding: 4px; }
+
+.progress { display: flex; gap: 6px; }
+.progress span { height: 4px; flex: 1; border-radius: 2px; background: var(--line); }
+.progress span.on { background: var(--accent); }
+#stage { display: flex; flex-direction: column; gap: 16px; }
+.stack { display: flex; flex-direction: column; gap: 16px; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 20px; display: flex; flex-direction: column; gap: 16px; }
+.q { margin: 0; font: 700 1.6rem/1.15 var(--font-display); text-wrap: balance; }
+.hint { margin: 0; color: var(--muted); font-size: 15px; }
+.choices { display: flex; flex-direction: column; gap: 10px; }
+button {
+  font: 600 1.05rem/1.2 var(--font-body); color: var(--fg); background: var(--surface);
+  border: 1.5px solid var(--line); border-radius: 10px; padding: 15px 16px; min-height: 52px;
+  text-align: left; cursor: pointer; display: flex; justify-content: space-between; align-items: center; gap: 12px;
+}
+button small { font-weight: 400; color: var(--muted); font-size: 14px; }
+button:hover { border-color: var(--accent); }
+button:focus-visible, input:focus-visible, summary:focus-visible, a:focus-visible { outline: 3px solid var(--link); outline-offset: 2px; }
+button.primary { background: var(--accent); color: var(--accent-fg); border-color: var(--accent); justify-content: center; text-align: center; }
+button.link { background: none; border: none; padding: 8px 0; min-height: 0; color: var(--muted); font-weight: 500; text-decoration: underline; text-underline-offset: 3px; justify-content: flex-start; align-self: flex-start; }
+.tile { flex-direction: column; align-items: flex-start; gap: 4px; padding: 18px 16px; }
+.tile .t { font: 700 1.35rem/1.1 var(--font-display); }
+.tile small { color: inherit; opacity: .82; font-size: 15px; }
+.tile.main { background: var(--accent); color: var(--accent-fg); border-color: var(--accent); }
+a.ext { color: var(--link); font-weight: 600; text-decoration: underline; text-underline-offset: 3px; display: inline-block; padding: 6px 0; }
+form { display: flex; flex-direction: column; gap: 12px; }
+label { font-weight: 600; }
+.field { display: flex; align-items: center; gap: 10px; }
+input[type="number"] {
+  font: 700 1.6rem/1 var(--font-display); width: 100%; min-width: 0; padding: 12px 14px;
+  color: var(--fg); background: var(--bg); border: 1.5px solid var(--line); border-radius: 10px;
+  font-variant-numeric: tabular-nums;
+}
+.unit { font: 700 1.3rem/1 var(--font-display); color: var(--muted); }
+.error { color: var(--no); font-size: 15px; margin: 0; min-height: 1.3em; }
+.result { border-radius: 14px; padding: 22px 20px; display: flex; flex-direction: column; gap: 10px; border: 2px solid; }
+.result.yes { background: var(--yes-bg); border-color: var(--yes); }
+.result.no { background: var(--no-bg); border-color: var(--no); }
+.badge { font: 700 13px/1 var(--font-display); letter-spacing: .12em; text-transform: uppercase; }
+.yes .badge { color: var(--yes); } .no .badge { color: var(--no); }
+.verdict { margin: 0; font: 700 2.4rem/1.05 var(--font-display); text-wrap: balance; }
+.why { margin: 0; color: var(--fg); }
+.facts { margin: 0; padding: 0; list-style: none; display: grid; gap: 6px; font-size: 15px; }
+.facts li { display: flex; justify-content: space-between; gap: 12px; border-top: 1px solid var(--line); padding-top: 6px; }
+.facts b { font-variant-numeric: tabular-nums; }
+
+/* Chandler rules list */
+.rules { margin: 0; padding: 0; list-style: none; display: grid; gap: 12px; }
+.rules li { display: flex; flex-direction: column; gap: 4px; padding-top: 12px; border-top: 1px solid var(--line); }
+.rules li:first-child { border-top: none; padding-top: 0; }
+.rules li.warn { background: var(--no-bg); border: 1.5px solid var(--no); border-radius: 10px; padding: 12px; }
+.rules li.warn .tx { font-weight: 600; color: var(--no); }
+.chip { align-self: flex-start; font: 700 12px/1 var(--font-display); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); border: 1px solid var(--line); border-radius: 6px; padding: 4px 6px; }
+
+/* Statute and definition lists: tap a row to open its summary. */
+.refs .h { margin: 0; font: 700 1.3rem/1.1 var(--font-display); }
+.refs .list { display: flex; flex-direction: column; }
+.refs details { border-top: 1px solid var(--line); }
+.refs summary { list-style: none; cursor: pointer; padding: 12px 0; min-height: 48px; display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.refs summary::-webkit-details-marker { display: none; }
+.refs summary::after { content: "+"; font: 700 1.5rem/1 var(--font-display); color: var(--muted); flex: none; }
+.refs details[open] summary::after { content: "\2212"; }
+.refs .num { display: block; font: 700 1rem/1.1 var(--font-display); letter-spacing: .04em; color: var(--link); font-variant-numeric: tabular-nums; }
+.refs .lbl { display: block; margin-top: 4px; font-weight: 500; }
+.statute { padding: 0 0 16px; display: flex; flex-direction: column; gap: 10px; }
+.statute .tag { font: 700 12px/1 var(--font-display); letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+.statute .st { font-weight: 600; }
+.statute ul { margin: 0; padding-left: 1.15rem; display: grid; gap: 6px; font-size: 15.5px; }
+.statute a { color: var(--link); font-weight: 600; text-decoration: underline; text-underline-offset: 3px; display: inline-block; padding: 4px 0; align-self: flex-start; }
+.links { display: flex; flex-direction: column; }
+@media (prefers-reduced-motion: no-preference) { .card, .result { animation: rise .18s ease-out; } }
+@keyframes rise { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+</style>
+
+</head>
+<body>
+<main>
+  <header class="band" id="band"></header>
+  <div class="progress" id="progress" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
+  <section id="stage" aria-live="polite"></section>
+</main>
+
+<script>
+(function () {
+  var AZ = "https://www.azleg.gov/ars/28/";
+  function url(sec) { var n = String(sec); while (n.length < 5) n = "0" + n; return AZ + n + ".htm"; }
+  var ORD = "https://archivedrecords.chandleraz.gov/getdoc.aspx?docid=14150&app=10";
+  var CITY_PAGE = "https://www.chandleraz.gov/residents/transportation/bikes-and-scooters";
+  var CITY_GUIDE = "https://www.chandleraz.gov/sites/default/files/departments/transportation/City-of-Chandler-E-Bike-Safety-and-Information-Guide.pdf";
+  var CITY_NEWS = "https://www.chandleraz.gov/news-center/chandler-adopts-ordinance-add-e-bike-regulations-city-code";
+  var PDF = "quick-reference.pdf";
+
+  /* Arizona statutes for conveyances that are NOT e-bikes. Order follows the Quick Reference PDF. */
+  var STATUTES = [
+    { sec: 3151, num: "ARS 28-3151(A)", label: "No valid license / required motorcycle privilege", title: "Driver license requirement; definition", pts: [
+      "A valid driver license, with the right endorsement, is required to drive a motor vehicle on a highway.",
+      "Driving an off-highway vehicle in Arizona also requires a valid license.",
+      "If the violator is a minor, the citation can go to a parent or guardian. Under 12, it goes to the parent or guardian. At 12 to under 16, it goes to the minor or the parent, not both.",
+      "“Highway” means the full width of a public road maintained by a government, if any part is open to ordinary vehicle travel."
+    ]},
+    { sec: 2153, num: "ARS 28-2153(A)", label: "Unregistered motor vehicle", title: "Registration requirement; exceptions; assessment; violation; classification", pts: [
+      "A motor vehicle, trailer or semitrailer may not be operated, moved or left on a highway unless it is registered with the department for the current registration year.",
+      "A vehicle registered for the current year by the state or country where its owner or lessee resides also satisfies the requirement.",
+      "Subsection A itself states no penalty."
+    ]},
+    { sec: 2532, num: "ARS 28-2532", label: "No current registration (civil penalty)", title: "Registration; violation; civil penalty; dismissal", pts: [
+      "An owner or operator of a vehicle that must be registered but is unregistered, or lacks current plates, faces a $300 civil penalty if it is driven on a highway or the person lets someone else drive it there.",
+      "The case is dismissed if the defendant gets proper plates or registration afterward.",
+      "The court may choose not to impose the penalty on an operator who is not the owner."
+    ]},
+    { sec: 4135, num: "ARS 28-4135(A)", label: "No required liability insurance", title: "Motor vehicle financial responsibility requirement; civil penalties; restricted driving privilege; evidence at hearing", pts: [
+      "A vehicle driven on a state highway must be covered by liability insurance or an approved alternative.",
+      "The driver must carry proof of coverage, which can be shown on a phone. Not showing it when an officer asks is a civil violation. It is dismissed if the person proves by the court date that coverage was in place.",
+      "First violation: minimum $500 penalty and a three-month suspension or restriction of driving privileges.",
+      "Second violation within 36 months: minimum $750 and a six-month suspension of license and registration.",
+      "Third or more within 36 months: minimum $1,000 and a one-year suspension."
+    ]},
+    { sec: 2354, num: "ARS 28-2354(A)/(B)", label: "No / improperly displayed license plate", title: "License plates; attachment; civil penalty", pts: [
+      "Plates must be displayed on the rear of motor vehicles, motorcycles, trailers and semitrailers, with front-and-rear options for certain vehicles.",
+      "Plates must stay displayed until their lawful use expires or is canceled or revoked.",
+      "Plates must be legible, securely fastened so they do not swing, at least 12 inches above the ground, and in a clearly visible position.",
+      "Obscuring the state name at the top of the plate carries a $30 civil penalty, or $100 for a repeat within 12 months."
+    ]},
+    { sec: 964, num: "ARS 28-964(A)", label: "Helmet required (under 18); eye protection", title: "Motorcycles; all-terrain vehicles; motor driven cycles; equipment; exception; citations; civil penalty; community restitution", pts: [
+      "This section covers motorcycles, all-terrain vehicles and motor driven cycles.",
+      "Operators and passengers under 18 must wear a properly secured protective helmet. Operators must also wear eye protection unless the vehicle has a windshield.",
+      "Only 16- and 17-year-olds who hold a license or permit can be cited. A first violation is a $100 civil penalty or community service.",
+      "An adult operator can be cited if an under-18 passenger is not wearing a helmet."
+    ]},
+    { sec: 904, num: "ARS 28-904(A)", label: "Motor vehicle on sidewalk", title: "Driving on sidewalk", pts: [] },
+    { sec: 924, num: "ARS 28-924(B)", label: "Motorcycle without required headlamp", title: "Motor vehicle head lamps", pts: [
+      "Most motor vehicles must have at least two headlamps, one on each side of the front.",
+      "Motorcycles, all-terrain vehicles and motor driven cycles must have at least one and not more than two headlamps.",
+      "Headlamps must meet the article’s requirements and limits."
+    ]},
+    { sec: 815, num: "ARS 28-815(D)", label: "Motor vehicle in bicycle lane", title: "Riding on roadway and bicycle path; bicycle path usage", pts: [
+      "A path or lane designated for bicycles is for the exclusive use of bicycles.",
+      "Vehicles may not be operated, stopped, parked or left standing in a designated bicycle path or lane, except in an emergency or to cross it to reach a road or driveway.",
+      "Bicyclists on a roadway generally ride as close as practicable to the right edge, with exceptions, and no more than two abreast.",
+      "This section states no penalty."
+    ]},
+    { sec: 3511, num: "ARS 28-3511(A)(1)(b)", label: "20-day impound", title: "Removal and immobilization or impoundment of vehicle; Arizona crime information center database", pts: [
+      "An officer must remove and either immobilize or impound a vehicle in several situations.",
+      "Under (A)(1)(b): the driver has never been issued a valid driver license or permit by Arizona and cannot show evidence of ever having a valid license or permit from another jurisdiction.",
+      "A vehicle removed under subsection A is immobilized or impounded for 20 days, with exceptions in other provisions of the article."
+    ]}
+  ];
+
+  /* Definitions from ARS 28-101. Paragraph numbers are the statute's current numbering. */
+  var DEFS = [
+    { sec: 101, num: "ARS 28-101 ¶ 29", label: "Electric bicycle", title: "Definitions", pts: [
+      "A bicycle or tricycle with fully operable pedals and an electric motor of less than 750 watts, in one of three classes.",
+      "Class 1: the motor assists only while the rider is pedaling and stops assisting at 20 mph.",
+      "Class 2: the motor can propel the bike on its own and stops assisting at 20 mph.",
+      "Class 3: the motor assists only while the rider is pedaling and stops assisting at 28 mph."
+    ]},
+    { sec: 101, num: "ARS 28-101 ¶ 50", label: "Motorcycle", title: "Definitions", pts: [
+      "A motor vehicle with a seat or saddle for the rider, designed to travel on no more than three wheels in contact with the ground.",
+      "Excludes tractors, electric bicycles, electric miniature scooters, electric standup scooters and mopeds."
+    ]},
+    { sec: 101, num: "ARS 28-101 ¶ 51", label: "Motor driven cycle", title: "Definitions", pts: [
+      "A motorcycle, including every motor scooter, with a motor producing not more than five horsepower.",
+      "Excludes electric bicycles, electric miniature scooters and electric standup scooters."
+    ]},
+    { sec: 101, num: "ARS 28-101 ¶ 53", label: "Motor vehicle", title: "Definitions", pts: [
+      "A self-propelled vehicle.",
+      "Excludes electric bicycles, electric miniature scooters, electric standup scooters and motorized skateboards, among other things."
+    ]},
+    { sec: 101, num: "ARS 28-101 ¶ 49", label: "Moped", title: "Definitions", pts: [
+      "A bicycle with a helper motor. Excludes electric bicycles and electric scooters.",
+      "Must also meet engine size, horsepower and speed limits, with a maximum of 25 mph on level ground."
+    ]},
+    { sec: 101, num: "ARS 28-101 ¶ 11", label: "Bicycle", title: "Definitions", pts: [
+      "A human-powered device, including a racing wheelchair, with two tandem wheels or three wheels in contact with the ground, at least one of them over 16 inches in diameter."
+    ]}
+  ];
+
+  /* Chandler City Code, Chapter 13 (Bicycles), as amended by Ordinance 5164. */
+  var CITY_CODE = [
+    { href: ORD, link: "Read Ordinance 5164 ↗", num: "Chandler Code 13-1", label: "E-bike definitions", title: "Definitions", pts: [
+      "Electric bicycle: a bicycle or tricycle with fully operable pedals and a motor under 750 watts that meets one of the three class definitions.",
+      "Class 1: the motor assists only while the rider pedals and stops assisting at 20 mph.",
+      "Class 2: the motor can propel the bike alone and cannot provide assistance at 20 mph or above.",
+      "Class 3: the motor assists only while the rider pedals and stops assisting at 28 mph."
+    ]},
+    { href: ORD, link: "Read Ordinance 5164 ↗", num: "Chandler Code 13-6", label: "Bicycle lighting: sunset to sunrise", title: "Equipment required", pts: [
+      "A bicycle used between sunset and sunrise must have a front lamp and a rear red reflector.",
+      "The front lamp must emit white light visible from at least 500 feet.",
+      "The reflector must be approved by the Arizona Department of Transportation and visible from 50 to 300 feet.",
+      "A red rear lamp visible from 500 feet is optional, in addition to the reflector."
+    ]},
+    { href: ORD, link: "Read Ordinance 5164 ↗", num: "Chandler Code 13-8.1", label: "Pedestrians and speed", title: "Pedestrian right-of-way and speed", pts: [
+      "Riders must yield to pedestrians on sidewalks and shared-use paths and keep a reasonable and prudent speed.",
+      "Class 1 and Class 2 e-bikes are capped at 15 mph on sidewalks, shared-use paths and in city parks.",
+      "They must slow to 5 mph when passing a pedestrian on those same routes."
+    ]},
+    { href: ORD, link: "Read Ordinance 5164 ↗", num: "Chandler Code 13-8.3", label: "Traffic laws apply", title: "Applicability of traffic laws", pts: [
+      "All traffic laws apply to people operating bicycles or electric bicycles.",
+      "A rider on a roadway has the same rights and duties as a vehicle driver under the state rules of the road and this chapter, except where those rules cannot apply by their nature."
+    ]},
+    { href: ORD, link: "Read Ordinance 5164 ↗", num: "Chandler Code 13-9.1", label: "Under 16 on a Class 3 e-bike", title: "Age restrictions", pts: [
+      "No person under the age of 16 may operate a Class 3 electric bicycle."
+    ]},
+    { href: ORD, link: "Read Ordinance 5164 ↗", num: "Chandler Code 13-9.2", label: "Under 18 without a helmet", title: "Helmet required", pts: [
+      "Everyone under 18 must wear a helmet when operating an electric bicycle.",
+      "The helmet must meet minimum testing and safety standards approved by the bicycle industry."
+    ]},
+    { href: ORD, link: "Read Ordinance 5164 ↗", num: "Chandler Code 13-9.3", label: "Class 3 in a prohibited area", title: "Location restrictions", pts: [
+      "Class 3 e-bikes are prohibited on sidewalks, in city parks and on shared-use paths in Chandler.",
+      "Operators must obey posted signs."
+    ]},
+    { href: ORD, link: "Read Ordinance 5164 ↗", num: "Chandler Code 13-2", label: "Parent responsibility", title: "Parent responsibility", pts: [
+      "If a fine is imposed on a minor, the parent or legal guardian with custody or control is jointly and severally liable for payment, whether or not they knew of or anticipated the violation."
+    ]},
+    { href: ORD, link: "Read Ordinance 5164 ↗", num: "Chandler Code 13-10", label: "Penalties", title: "Penalties", pts: [
+      "A person who violates this chapter is subject to the penalties in Section 1.8-5 of the City Code.",
+      "Habitual offenders may be punished as set out in Section 1.8-7.B."
+    ]}
+  ];
+
+  /* From the City of Chandler's own e-bike information (not code sections). */
+  var CITY_INFO = [
+    { href: CITY_PAGE, link: "City bikes and scooters page ↗", num: "City of Chandler", label: "Canal paths", title: "Bikes and scooters", pts: [
+      "Motorized vehicles, including e-bikes and e-scooters, are not allowed on canal shared-use paths, such as the Paseo Trail and the Western Canal Path."
+    ]},
+    { href: CITY_PAGE, link: "City bikes and scooters page ↗", num: "City of Chandler", label: "License, registration and insurance", title: "Bikes and scooters", pts: [
+      "Not required for Class 1, 2 or 3 e-bikes.",
+      "Vehicles that do not meet the class definitions are “non-e-bikes.” They need a license, registration and insurance, and may not be ridden in bike lanes."
+    ]},
+    { href: CITY_PAGE, link: "City bikes and scooters page ↗", num: "City of Chandler", label: "Where each class can ride", title: "Bikes and scooters", pts: [
+      "Class 1 and 2: bike lanes, sidewalks and non-canal shared-use paths, with a 15 mph maximum and 5 mph when passing pedestrians.",
+      "Class 3: roadways and bike lanes. Riders must be at least 16."
+    ]}
+  ];
+
+  var SPEEDS = [
+    { label: "More than 28 MPH", sub: "", cls: null, why: "It goes faster than 28 MPH." },
+    { label: "Up to 28 MPH", sub: "pedal assist", cls: 3, why: "Pedal assist only, up to 28 MPH." },
+    { label: "Up to 28 MPH", sub: "throttle only", cls: null, why: "A throttle-only bike that goes past 20 MPH is not in any e-bike class." },
+    { label: "Up to 20 MPH", sub: "pedal assist", cls: 1, why: "Pedal assist only, up to 20 MPH." },
+    { label: "Up to 20 MPH", sub: "throttle only", cls: 2, why: "Throttle-powered, up to 20 MPH." }
+  ];
+
+  var stage = document.getElementById("stage");
+  var band = document.getElementById("band");
+  var bars = document.querySelectorAll("#progress span");
+  var progress = document.getElementById("progress");
+  var state;
+  function fresh() { return { step: "home", watts: null, speed: null, age: null, noReason: null, stack: [] }; }
+  state = fresh();
+
+  function el(tag, attrs, kids) {
+    var n = document.createElement(tag);
+    Object.keys(attrs || {}).forEach(function (k) {
+      if (k === "text") n.textContent = attrs[k]; else n.setAttribute(k, attrs[k]);
+    });
+    (kids || []).forEach(function (c) { n.appendChild(c); });
+    return n;
+  }
+  function txt(s) { return document.createTextNode(s); }
+  function go(step) { state.stack.push(state.step); state.step = step; render(); }
+  function back() { state.step = state.stack.pop() || "home"; render(); }
+  function restart() { state = fresh(); render(); }
+  function backLink() { var b = el("button", { type: "button", "class": "link", text: "Back" }); b.onclick = back; return b; }
+  function mainLink(primary) {
+    var b = el("button", { type: "button", "class": primary ? "primary" : "link", text: "Back to main screen" });
+    b.onclick = restart; return b;
+  }
+  function choice(label, sub, fn) {
+    var b = el("button", { type: "button" }, [el("span", { text: label })]);
+    if (sub) b.appendChild(el("small", { text: sub }));
+    b.onclick = fn; return b;
+  }
+  function tile(title, sub, main, fn) {
+    var b = el("button", { type: "button", "class": "tile" + (main ? " main" : "") }, [el("span", { "class": "t", text: title }), el("small", { text: sub })]);
+    b.onclick = fn; return b;
+  }
+
+  /* Header band. Logo files go next to index.html as patch.png and wings.png; until then a placeholder shows. */
+  function logoSlot(src, alt, ph, extra) {
+    var slot = el("div", { "class": "logo" + (extra ? " " + extra : "") });
+    var img = el("img", { src: src, alt: alt });
+    img.onerror = function () { slot.textContent = ""; slot.className = "logo ph" + (extra ? " " + extra : ""); slot.appendChild(txt(ph)); slot.setAttribute("role", "img"); slot.setAttribute("aria-label", alt + " (placeholder)"); };
+    slot.appendChild(img);
+    return slot;
+  }
+  function buildBand() {
+    band.textContent = "";
+    band.appendChild(logoSlot("patch.png", "Chandler Police Department patch", "Patch logo", ""));
+    band.appendChild(el("div", { "class": "title" }, [el("h1", {}, [el("span", { "class": "ln", text: "E-Bike" }), txt(" "), el("span", { "class": "ln", text: "or" }), txt(" "), el("span", { "class": "ln", text: "E-Motorcycle" })])]));
+    band.appendChild(logoSlot("wings.png", "Traffic Motor Wings", "Wings logo", "wide"));
+  }
+
+  /* One tappable row that opens to a summary plus a link to the official text. */
+  function refItem(e) {
+    var summary = el("summary", {}, [el("span", {}, [
+      el("span", { "class": "num", text: e.num }),
+      el("span", { "class": "lbl", text: e.label })
+    ])]);
+    var body = el("div", { "class": "statute" }, []);
+    if (e.title !== "Definitions") body.appendChild(el("span", { "class": "st", text: e.title }));
+    if (e.pts.length) {
+      body.appendChild(el("span", { "class": "tag", text: "Plain-language summary" }));
+      body.appendChild(el("ul", {}, e.pts.map(function (p) { return el("li", { text: p }); })));
+    } else {
+      body.appendChild(el("p", { "class": "hint", text: "No summary here yet. Open the official text to read it." }));
+    }
+    body.appendChild(el("a", { href: e.href || url(e.sec), target: "_blank", rel: "noopener noreferrer", text: e.link || "Read the official text ↗" }));
+    return el("details", {}, [summary, body]);
+  }
+  function refList(items) { return el("div", { "class": "list" }, items.map(refItem)); }
+  function refCard(title, hint, items) {
+    var kids = [el("h2", { "class": "h", text: title })];
+    if (hint) kids.push(el("p", { "class": "hint", text: hint }));
+    kids.push(refList(items));
+    return el("div", { "class": "card refs" }, kids);
+  }
+
+  /* Screens */
+  function stepHome() {
+    var pdf = el("a", { "class": "ext", href: PDF, target: "_blank", rel: "noopener noreferrer", text: "Quick reference (PDF) ↗" });
+    return el("div", { "class": "stack" }, [
+      tile("Classify a Conveyance", "Is it an e-bike? Answer a few questions.", true, function () { go("pedals"); }),
+      tile("Chandler City Code", "E-bike rules for the City of Chandler.", false, function () { go("code"); }),
+      tile("Definitions and statutes", "ARS 28-101 and common citable violations.", false, function () { go("defs"); }),
+      pdf
+    ]);
+  }
+
+  function stepPedals() {
+    return el("div", { "class": "card" }, [
+      el("h2", { "class": "q", text: "Does it have fully operable pedals?" }),
+      el("div", { "class": "choices" }, [
+        choice("Yes", "", function () { go("watts"); }),
+        choice("No", "", function () { state.speed = null; state.watts = null; state.noReason = "pedals"; go("result"); })
+      ]),
+      backLink()
+    ]);
+  }
+
+  function stepWatts() {
+    var input = el("input", { type: "number", id: "watts", inputmode: "numeric", min: "0", step: "1", placeholder: "e.g. 500", autocomplete: "off" });
+    if (state.watts != null) input.value = state.watts;
+    var err = el("p", { "class": "error", id: "err" });
+    var form = el("form", {}, [
+      el("label", { "for": "watts", text: "What is the wattage of the motor?" }),
+      el("div", { "class": "field" }, [input, el("span", { "class": "unit", text: "W" })]),
+      err,
+      el("button", { type: "submit", "class": "primary", text: "Continue" })
+    ]);
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      var v = parseFloat(input.value);
+      if (!isFinite(v) || v < 0) { err.textContent = "Enter the motor wattage as a number, like 500."; return; }
+      state.watts = v;
+      if (v >= 750) { state.speed = null; state.noReason = "watts"; go("result"); }
+      else go("speed");
+    });
+    setTimeout(function () { try { input.focus(); } catch (x) {} }, 0);
+    return el("div", { "class": "card" }, [
+      el("p", { "class": "hint", text: "Look on the motor, battery label or spec sheet. Exactly 750 W fails." }),
+      form, backLink()
+    ]);
+  }
+
+  function stepSpeed() {
+    var list = el("div", { "class": "choices" }, SPEEDS.map(function (s) {
+      return choice(s.label, s.sub, function () {
+        state.speed = s; state.noReason = null;
+        if (s.cls) go("age"); else go("result");
+      });
+    }));
+    return el("div", { "class": "card" }, [el("h2", { "class": "q", text: "How fast does it go?" }), list, backLink()]);
+  }
+
+  function stepAge() {
+    var input = el("input", { type: "number", id: "age", inputmode: "numeric", min: "1", max: "120", step: "1", placeholder: "e.g. 15", autocomplete: "off" });
+    if (state.age != null) input.value = state.age;
+    var err = el("p", { "class": "error", id: "ageerr" });
+    var form = el("form", {}, [
+      el("label", { "for": "age", text: "How old is the rider?" }),
+      el("div", { "class": "field" }, [input, el("span", { "class": "unit", text: "years" })]),
+      err,
+      el("button", { type: "submit", "class": "primary", text: "Continue" })
+    ]);
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      var v = parseInt(input.value, 10);
+      if (!isFinite(v) || v < 1 || v > 120) { err.textContent = "Enter the rider’s age in years, like 15."; return; }
+      state.age = v; go("result");
+    });
+    var skip = el("button", { type: "button", "class": "link", text: "Skip. Age unknown" });
+    skip.onclick = function () { state.age = null; go("result"); };
+    setTimeout(function () { try { input.focus(); } catch (x) {} }, 0);
+    return el("div", { "class": "card" }, [
+      el("p", { "class": "hint", text: "Chandler has age rules for e-bikes." }),
+      form, skip, backLink()
+    ]);
+  }
+
+  /* Chandler rules that apply to this class and rider. */
+  function chandlerRules(cls, age) {
+    var r = [];
+    if (cls === 3 && age != null && age < 16) r.push({ warn: true, text: "Rider is under 16. No person under 16 may operate a Class 3 e-bike.", tag: "Code 13-9.1" });
+    else if (cls === 3) r.push({ text: "Riders must be at least 16 to operate a Class 3 e-bike.", tag: "Code 13-9.1" });
+    if (age != null && age < 18) r.push({ warn: true, text: "Rider is under 18. A helmet is required.", tag: "Code 13-9.2" });
+    else if (age == null) r.push({ text: "A helmet is required for riders under 18.", tag: "Code 13-9.2" });
+    if (cls === 3) r.push({ text: "Not allowed on sidewalks, in city parks or on shared-use paths. Ride on the roadway or in bike lanes. Obey posted signs.", tag: "Code 13-9.3" });
+    else r.push({ text: "15 mph limit on sidewalks, shared-use paths and in city parks. 5 mph when passing a pedestrian. Yield to pedestrians.", tag: "Code 13-8.1" });
+    r.push({ text: "Between sunset and sunrise: white front lamp and a rear red reflector.", tag: "Code 13-6" });
+    r.push({ text: "No motorized vehicles, including e-bikes, on canal paths such as the Paseo Trail and the Western Canal Path.", tag: "City page" });
+    r.push({ text: "No license, registration or insurance required for Class 1, 2 or 3 e-bikes.", tag: "City page" });
+    return r;
+  }
+
+  function stepResult() {
+    var cls = state.speed ? state.speed.cls : null;
+    var box;
+    if (cls) {
+      var top = cls === 3 ? "28 MPH, pedal assist" : cls === 2 ? "20 MPH, throttle" : "20 MPH, pedal assist";
+      box = el("div", { "class": "result yes" }, [
+        el("span", { "class": "badge", text: "Result" }),
+        el("p", { "class": "verdict", text: "It is a Class " + cls + " e-bike." }),
+        el("p", { "class": "why", text: state.speed.why }),
+        el("ul", { "class": "facts" }, [
+          el("li", {}, [el("span", { text: "Motor" }), el("b", { text: state.watts + " W" })]),
+          el("li", {}, [el("span", { text: "Class " + cls }), el("b", { text: top })]),
+          el("li", {}, [el("span", { text: "Rider age" }), el("b", { text: state.age != null ? String(state.age) : "Not given" })])
+        ])
+      ]);
+      var rules = el("ul", { "class": "rules" }, chandlerRules(cls, state.age).map(function (x) {
+        return el("li", { "class": x.warn ? "warn" : "" }, [el("span", { "class": "tx", text: x.text }), el("span", { "class": "chip", text: x.tag })]);
+      }));
+      var card = el("div", { "class": "card" }, [el("h2", { "class": "q", text: "Chandler rules" }), rules]);
+      var codeBtn = tile("Chandler City Code", "Read the e-bike sections.", false, function () { go("code"); });
+      return el("div", { "class": "stack" }, [box, card, codeBtn, actions()]);
+    }
+    var why;
+    if (state.noReason === "watts") {
+      why = el("p", { "class": "why" }, [txt("The motor is NOT "), el("strong", { text: "less than 750W" }), txt(".")]);
+    } else if (state.noReason === "pedals") {
+      why = el("p", { "class": "why", text: "It does not have fully operable pedals." });
+    } else {
+      why = el("p", { "class": "why", text: state.speed ? state.speed.why : "" });
+    }
+    box = el("div", { "class": "result no" }, [
+      el("span", { "class": "badge", text: "Result" }),
+      el("p", { "class": "verdict", text: "It is NOT an e-bike." }),
+      why
+    ]);
+    var note = el("div", { "class": "card" }, [
+      el("h2", { "class": "q", text: "In Chandler" }),
+      el("p", { "class": "why", text: "A vehicle that does not meet the e-bike classes needs a license, registration and insurance. It may not be ridden in bike lanes." }),
+      el("span", { "class": "chip", text: "City page" })
+    ]);
+    var charges = refCard("Common citable violations", "Tap a statute to read what it says.", STATUTES);
+    return el("div", { "class": "stack" }, [box, note, charges, actions()]);
+  }
+
+  function actions() {
+    var r = el("button", { type: "button", "class": "primary", text: "Classify another conveyance" });
+    r.onclick = function () { state = fresh(); state.step = "pedals"; state.stack = ["home"]; render(); };
+    return el("div", { "class": "stack", "style": "gap:8px" }, [r, mainLink(false)]);
+  }
+
+  function stepCode() {
+    var links = el("div", { "class": "card" }, [
+      el("h2", { "class": "h", text: "More from the City" }),
+      el("div", { "class": "links" }, [
+        el("a", { "class": "ext", href: CITY_GUIDE, target: "_blank", rel: "noopener noreferrer", text: "E-Bike Safety and Information Guide (PDF) ↗" }),
+        el("a", { "class": "ext", href: CITY_PAGE, target: "_blank", rel: "noopener noreferrer", text: "Bikes and scooters page ↗" }),
+        el("a", { "class": "ext", href: CITY_NEWS, target: "_blank", rel: "noopener noreferrer", text: "News release on the ordinance ↗" })
+      ])
+    ]);
+    return el("div", { "class": "stack" }, [
+      mainLink(false),
+      refCard("Chandler City Code", "Chapter 13, Bicycles. Summarized from Ordinance 5164, adopted June 11, 2026, effective July 11, 2026. Tap a section to read the summary.", CITY_CODE),
+      refCard("From the City’s e-bike information", "Not code sections. Posted by the City.", CITY_INFO),
+      links,
+      mainLink(true)
+    ]);
+  }
+
+  function stepDefs() {
+    return el("div", { "class": "stack" }, [
+      mainLink(false),
+      refCard("Definitions", "From ARS 28-101. Tap a term to read the summary.", DEFS),
+      refCard("Arizona statutes", "Common citable violations when a conveyance is not an e-bike.", STATUTES),
+      mainLink(true)
+    ]);
+  }
+
+  function render() {
+    stage.textContent = "";
+    var map = { home: stepHome, pedals: stepPedals, watts: stepWatts, speed: stepSpeed, age: stepAge, result: stepResult, code: stepCode, defs: stepDefs };
+    stage.appendChild(map[state.step]());
+    var n = { pedals: 1, watts: 2, speed: 3, age: 4 }[state.step] || 0;
+    for (var i = 0; i < bars.length; i++) bars[i].className = i < n ? "on" : "";
+    progress.style.display = n ? "flex" : "none";
+    try { window.scrollTo(0, 0); } catch (x) {}
+  }
+  /* One line when the title fits between the logos, otherwise three lines with "or" in the middle. */
+  function fitTitle() {
+    var h = band.querySelector("h1"); if (!h) return;
+    h.classList.add("one");
+    if (h.scrollWidth > h.clientWidth + 1) h.classList.remove("one");
+  }
+  buildBand();
+  fitTitle();
+  window.addEventListener("resize", fitTitle);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitTitle);
+  render();
+})();
+</script>
+
+</body>
+</html>
