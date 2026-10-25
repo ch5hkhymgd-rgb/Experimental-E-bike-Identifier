@@ -305,10 +305,10 @@ input[type="number"] {
 
   var SPEEDS = [
     { label: "More than 28 MPH", sub: "", cls: null, why: "It goes faster than 28 MPH." },
-    { label: "Up to 28 MPH", sub: "pedal assist", cls: 3, why: "Pedal assist only, up to 28 MPH." },
     { label: "Up to 28 MPH", sub: "throttle only", cls: null, why: "A throttle-only bike that goes past 20 MPH is not in any e-bike class." },
-    { label: "Up to 20 MPH", sub: "pedal assist", cls: 1, why: "Pedal assist only, up to 20 MPH." },
-    { label: "Up to 20 MPH", sub: "throttle only", cls: 2, why: "Throttle-powered, up to 20 MPH." }
+    { label: "Up to 28 MPH", sub: "pedal assist", cls: 3, why: "Pedal assist only, up to 28 MPH." },
+    { label: "Up to 20 MPH", sub: "throttle only", cls: 2, why: "Throttle-powered, up to 20 MPH." },
+    { label: "Up to 20 MPH", sub: "pedal assist", cls: 1, why: "Pedal assist only, up to 20 MPH." }
   ];
 
   var stage = document.getElementById("stage");
@@ -518,13 +518,8 @@ input[type="number"] {
       el("p", { "class": "verdict", text: "It is NOT an e-bike." }),
       why
     ]);
-    var note = el("div", { "class": "card" }, [
-      el("h2", { "class": "q", text: "In Chandler" }),
-      el("p", { "class": "why", text: "A vehicle that does not meet the e-bike classes needs a license, registration and insurance. It may not be ridden in bike lanes." }),
-      el("span", { "class": "chip", text: "City page" })
-    ]);
     var charges = refCard("Common citable violations", "Tap a statute to read what it says.", STATUTES);
-    return el("div", { "class": "stack" }, [box, note, charges, actions()]);
+    return el("div", { "class": "stack" }, [box, charges, actions()]);
   }
 
   function actions() {
